@@ -35,7 +35,13 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Users who prefer reduced motion get no animations/transitions */
+  /*
+    Users who prefer reduced motion get no animations/transitions.
+    We use 0.01ms instead of 0s because some browsers treat 0s as
+    "no animation at all" and skip the animationend event entirely,
+    which can break JavaScript that listens for animation completion.
+    0.01ms is effectively instant but still fires the event.
+  */
   *,
   *::before,
   *::after {
@@ -402,6 +408,15 @@ select {
   text-align: center;
   margin-top: 2rem;
   margin-bottom: 3rem;
+}
+
+.load-more-done {
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.clear-filters-btn {
+  margin-top: 1rem;
 }
 
 .loading-more-text {

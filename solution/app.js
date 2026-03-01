@@ -32,7 +32,7 @@
 const API_BASE = 'https://pokeapi.co/api/v2'
 
 /** Number of Pokemon to fetch per page */
-const PAGE_SIZE = 24
+const PAGE_SIZE = 12
 
 /**
  * AbortController for the current fetch operation.
@@ -53,6 +53,11 @@ let currentAbortController = null
    the HTML.
    -------------------------------------------------------------------------- */
 
+// We use `const` here: this prevents reassigning the variable itself
+// (e.g., `state = {}` would error), but it does NOT prevent changing
+// properties inside the object (e.g., `state.status = 'loading'` is fine).
+// This is a common source of confusion -- `const` means "constant binding,"
+// not "immutable value."
 const state = {
   /** All Pokemon we have fetched so far (grows with Load More) */
   allPokemon: [],
@@ -499,7 +504,7 @@ function buildGridHTML() {
     return `
       <div class="status-message" role="status" aria-live="polite">
         <p>No Pokemon match your current filters.</p>
-        <button class="btn btn--secondary" id="clear-filters-btn" style="margin-top: 1rem;">
+        <button class="btn btn--secondary clear-filters-btn" id="clear-filters-btn">
           Clear Filters
         </button>
       </div>
@@ -551,7 +556,7 @@ function buildLoadMoreHTML() {
     if (state.allPokemon.length > 0) {
       return `
         <div class="load-more-container">
-          <p style="color: #999; font-size: 0.85rem;">
+          <p class="load-more-done">
             All ${state.allPokemon.length} loaded Pokemon shown.
           </p>
         </div>
@@ -607,6 +612,14 @@ function escapeHTML(str) {
    -------------------------------------------------------------------------- */
 
 /**
+ * Create the debounced search handler ONCE, outside of attachToolbarListeners.
+ * If we created it inside attachToolbarListeners, a new debounce closure
+ * would be created on every render, resetting the timer each time.
+ */
+const debouncedSearchHandler = debounce(handleSearchInput, 300)
+
+
+/**
  * Attach event listeners to toolbar controls.
  *
  * Because we rebuild the entire DOM on each render (via innerHTML),
@@ -623,7 +636,7 @@ function attachToolbarListeners() {
 
   // Search: debounced so we do not re-render on every keystroke
   if (searchInput) {
-    searchInput.addEventListener('input', debounce(handleSearchInput, 300))
+    searchInput.addEventListener('input', debouncedSearchHandler)
   }
 
   // Type filter: immediate response (no debounce needed for select changes)
@@ -703,6 +716,7 @@ async function handleLoadMore() {
   const limit = parseInt(nextURL.searchParams.get('limit'), 10) || PAGE_SIZE
 
   state.status = 'loading-more'
+  state.errorMessage = ''
   render()
 
   // Cancel any in-flight request
