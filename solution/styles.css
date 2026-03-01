@@ -1,0 +1,525 @@
+/* ==========================================================================
+   Pokemon Explorer -- Stylesheet
+   ==========================================================================
+   Organization:
+   1. Reset & Base
+   2. Layout
+   3. Header
+   4. Toolbar (search, filter, sort)
+   5. Pokemon Grid & Cards
+   6. Type Badges
+   7. Status Messages (loading, error, empty)
+   8. Buttons
+   9. Load More
+   10. Animations
+   11. Utility Classes
+   12. Responsive Adjustments
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. Reset & Base
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Smooth scrolling, but respect user preferences */
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Users who prefer reduced motion get no animations/transitions */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1a1a2e;
+  background-color: #f0f0f5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Remove default button/input font overrides */
+input,
+button,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. Layout
+   -------------------------------------------------------------------------- */
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   3. Header
+   -------------------------------------------------------------------------- */
+
+.page-header {
+  background: linear-gradient(135deg, #e63946 0%, #d62839 100%);
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.page-title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-top: 0.25rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Toolbar (search, filter, sort)
+   -------------------------------------------------------------------------- */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.search-group {
+  flex: 1 1 250px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  padding-left: 2.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #fafafa;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 0.75rem center;
+  background-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #e63946;
+  box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+  background-color: white;
+}
+
+/* Clear button inside search input (browser default) */
+.search-input::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+.filter-group {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.select-input {
+  padding: 0.625rem 2rem 0.625rem 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background-color: #fafafa;
+  cursor: pointer;
+  /* Custom dropdown arrow */
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: #e63946;
+  box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+}
+
+.result-count {
+  font-size: 0.85rem;
+  color: #777;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+
+/* --------------------------------------------------------------------------
+   5. Pokemon Grid & Cards
+   -------------------------------------------------------------------------- */
+
+.pokemon-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* Animation on appear */
+  animation: fadeInUp 0.4s ease both;
+  /* Stagger delay is set inline via style attribute */
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.card__image {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 0.75rem;
+  /* Prevent layout shift while image loads */
+  aspect-ratio: 1;
+  object-fit: contain;
+  /* Subtle background for missing images */
+  background: #f8f8f8;
+  border-radius: 50%;
+}
+
+.card__number {
+  display: block;
+  font-size: 0.75rem;
+  color: #aaa;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.card__name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  margin-bottom: 0.5rem;
+  color: #1a1a2e;
+}
+
+.card__types {
+  display: flex;
+  gap: 0.375rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+/* --------------------------------------------------------------------------
+   6. Type Badges
+   --------------------------------------------------------------------------
+   Each Pokemon type has its own color. These colors are sourced from
+   common Pokemon type color conventions.
+   -------------------------------------------------------------------------- */
+
+.type-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.type-badge--normal   { background: #a8a878; color: #fff; }
+.type-badge--fire     { background: #f08030; color: #fff; }
+.type-badge--water    { background: #6890f0; color: #fff; }
+.type-badge--electric { background: #f8d030; color: #333; }
+.type-badge--grass    { background: #78c850; color: #fff; }
+.type-badge--ice      { background: #98d8d8; color: #333; }
+.type-badge--fighting { background: #c03028; color: #fff; }
+.type-badge--poison   { background: #a040a0; color: #fff; }
+.type-badge--ground   { background: #e0c068; color: #333; }
+.type-badge--flying   { background: #a890f0; color: #fff; }
+.type-badge--psychic  { background: #f85888; color: #fff; }
+.type-badge--bug      { background: #a8b820; color: #fff; }
+.type-badge--rock     { background: #b8a038; color: #fff; }
+.type-badge--ghost    { background: #705898; color: #fff; }
+.type-badge--dragon   { background: #7038f8; color: #fff; }
+.type-badge--dark     { background: #705848; color: #fff; }
+.type-badge--steel    { background: #b8b8d0; color: #333; }
+.type-badge--fairy    { background: #ee99ac; color: #333; }
+
+
+/* --------------------------------------------------------------------------
+   7. Status Messages (loading, error, empty)
+   -------------------------------------------------------------------------- */
+
+.status-message {
+  text-align: center;
+  padding: 4rem 2rem;
+  max-width: 420px;
+  margin: 2rem auto;
+}
+
+.status-message p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Spinning Pokeball-style loader */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e0e0e0;
+  border-top-color: #e63946;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1.25rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-text {
+  color: #e63946;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   8. Buttons
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn--primary {
+  background-color: #e63946;
+  color: white;
+}
+
+.btn--primary:hover {
+  background-color: #c1121f;
+}
+
+.btn--primary:focus-visible {
+  outline: 2px solid #e63946;
+  outline-offset: 3px;
+}
+
+.btn--secondary {
+  background-color: #e8e8ee;
+  color: #1a1a2e;
+}
+
+.btn--secondary:hover {
+  background-color: #d8d8e0;
+}
+
+.btn--secondary:focus-visible {
+  outline: 2px solid #666;
+  outline-offset: 3px;
+}
+
+/* Disabled button state */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   9. Load More
+   -------------------------------------------------------------------------- */
+
+.load-more-container {
+  text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}
+
+.loading-more-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #777;
+  font-size: 0.9rem;
+  padding: 1rem;
+}
+
+.spinner--small {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. Animations
+   -------------------------------------------------------------------------- */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   11. Utility Classes
+   -------------------------------------------------------------------------- */
+
+/*
+  Visually hidden but still accessible to screen readers.
+  Use this for labels that sighted users do not need but screen readers do.
+*/
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   12. Responsive Adjustments
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  body {
+    padding: 0;
+  }
+
+  .container {
+    padding-inline: 1rem;
+  }
+
+  .page-header {
+    padding: 1.5rem 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+  }
+
+  .search-group {
+    flex: 1 1 auto;
+  }
+
+  .filter-group {
+    flex-direction: column;
+  }
+
+  .select-input {
+    width: 100%;
+  }
+
+  .result-count {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .pokemon-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .card {
+    padding: 1rem 0.75rem;
+  }
+
+  .card__image {
+    width: 72px;
+    height: 72px;
+  }
+
+  .card__name {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .pokemon-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}

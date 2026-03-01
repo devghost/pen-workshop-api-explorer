@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokemon Explorer</title>
+  <meta name="description" content="Browse, search, and filter Pokemon using the PokeAPI.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!--
+    We use a <header> for the page title and a <main> for the primary content.
+    Semantic HTML helps screen readers understand the page structure.
+  -->
+  <header class="page-header">
+    <div class="container">
+      <h1 class="page-title">Pokemon Explorer</h1>
+      <p class="page-subtitle">Browse, search, and filter Pokemon</p>
+    </div>
+  </header>
+
+  <main id="app" class="container" aria-busy="false">
+    <!--
+      This container is populated entirely by JavaScript.
+      The aria-busy attribute will be set to "true" during loading
+      so screen readers know content is being updated.
+    -->
+  </main>
+
+  <!--
+    We load the script at the end of <body> so the DOM is ready
+    when our code runs. An alternative is using "defer" on the script tag.
+  -->
+  <script src="app.js"></script>
+</body>
+</html>
